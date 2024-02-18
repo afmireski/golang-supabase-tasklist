@@ -4,6 +4,8 @@ Para a arquitetura do projeto será aplicado alguns conceitos de Ports and Adapt
 
 ## Estrutura
 
+![structure](docs/structure.png)
+
 ### Entidades
 
 #### Creator
