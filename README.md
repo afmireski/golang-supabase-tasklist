@@ -31,12 +31,12 @@ Para a arquitetura do projeto será aplicado alguns conceitos de Ports and Adapt
 | description | string  | Não         |
 | date        | time    | Sim         |
 | creator     | Creator | Não         |
-| isFinish    | boolean | Sim         |
+| finished    | bool | Sim         |
 
 ##### Ações
 - Quero poder **cadastrar** uma `Task`
 - Quero poder **encontrar** uma `Task` **por Id**
-- Quero poder **encontrar** uma `Task` **pela descrição**
-- Quero poder **listar** minhas `Tasks`.
+- Quero poder **encontrar** minhas `Tasks` **pelo título**
+- Quero poder **listar** todas as minhas `Tasks`.
   - Quero poder **ordenar** minhas `Tasks` **com base na data**.
   - Quero poder **ordenar** minhas `Tasks` **pelo estado de conclusão**.
