@@ -13,7 +13,7 @@ Para a arquitetura do projeto será aplicado alguns conceitos de Ports and Adapt
 | Propriedade | Tipo   | Obrigatório |
 |-------------|--------|-------------|
 | id          | int32  | Sim         |
-| nome        | string | Sim         |
+| name        | string | Sim         |
 | email       | string | Sim         |
 
 
