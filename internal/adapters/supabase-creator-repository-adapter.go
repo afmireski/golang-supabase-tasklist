@@ -1,0 +1,32 @@
+package adapters
+
+import (
+	"fmt"
+
+	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
+	supabase "github.com/nedpals/supabase-go"
+)
+
+type SupabaseCreatorRepositoryAdapter struct {
+	client *supabase.Client
+}
+
+func NewSupabaseCreatorRepositoryAdapter(client *supabase.Client) *SupabaseCreatorRepositoryAdapter {
+	return &SupabaseCreatorRepositoryAdapter{
+		client: client,
+	}
+}
+
+func (a *SupabaseCreatorRepositoryAdapter) FindByEmail(email string) (*entities.Creator, error) {
+
+	var supabaseData map[string]interface{}
+	err := a.client.DB.From("creators").Select("*").Single().Execute(&supabaseData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(supabaseData)
+
+	return entities.NewCreator(supabaseData["id"].(string), supabaseData["name"].(string), supabaseData["email"].(string)), nil
+}
