@@ -26,7 +26,16 @@ func (a *SupabaseCreatorRepositoryAdapter) FindByEmail(email string) (*entities.
 		return nil, err
 	}
 
-	fmt.Println(supabaseData)
+	return entities.NewCreator(supabaseData["id"].(string), supabaseData["name"].(string), supabaseData["email"].(string)), nil
+}
+
+func (a *SupabaseCreatorRepositoryAdapter) FindById(id string) (*entities.Creator, error) {
+	var supabaseData map[string]interface{}
+	err := a.client.DB.From("creators").Select("*").Single().Execute(&supabaseData)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return entities.NewCreator(supabaseData["id"].(string), supabaseData["name"].(string), supabaseData["email"].(string)), nil
 }
