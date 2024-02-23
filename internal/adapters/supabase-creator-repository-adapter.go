@@ -1,8 +1,6 @@
 package adapters
 
 import (
-	"fmt"
-
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
 	supabase "github.com/nedpals/supabase-go"
 )
