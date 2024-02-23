@@ -39,3 +39,11 @@ func (a *SupabaseCreatorRepositoryAdapter) FindById(id string) (*entities.Creato
 
 	return entities.NewCreator(supabaseData["id"].(string), supabaseData["name"].(string), supabaseData["email"].(string)), nil
 }
+
+func (a *SupabaseCreatorRepositoryAdapter) Create(input entities.Creator) error {
+
+	var results []entities.Creator
+	err := a.client.DB.From("creators").Insert(input).Execute(&results)
+
+	return err
+}
