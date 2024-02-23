@@ -18,7 +18,7 @@ func NewSupabaseCreatorRepositoryAdapter(client *supabase.Client) *SupabaseCreat
 func (a *SupabaseCreatorRepositoryAdapter) FindByEmail(email string) (*entities.Creator, error) {
 
 	var supabaseData map[string]interface{}
-	err := a.client.DB.From("creators").Select("*").Eq("email", email).Execute(&supabaseData)
+	err := a.client.DB.From("creators").Select("*").Single().Eq("email", email).Execute(&supabaseData)
 
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (a *SupabaseCreatorRepositoryAdapter) FindByEmail(email string) (*entities.
 
 func (a *SupabaseCreatorRepositoryAdapter) FindById(id string) (*entities.Creator, error) {
 	var supabaseData map[string]interface{}
-	err := a.client.DB.From("creators").Select("*").Eq("id", id).Execute(&supabaseData)
+	err := a.client.DB.From("creators").Select("*").Single().Eq("id", id).Execute(&supabaseData)
 
 	if err != nil {
 		return nil, err
