@@ -22,14 +22,13 @@ func main() {
 
 	supabaseClient := supabase.CreateClient(supabaseUrl, supabaseKey)
 
-	creatorRepository := adapters.NewSupabaseCreatorRepositoryAdapter(supabaseClient)
+	// creatorRepository := adapters.NewSupabaseCreatorRepositoryAdapter(supabaseClient)
+	tasksRepository := adapters.NewSupabaseTasksRepositoryAdapter(supabaseClient)
 
-	creator, err := creatorRepository.FindByEmail("teste@example.com")
+	task, err := tasksRepository.FindById(1)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Id: ", creator.Id)
-	fmt.Println("Name: ", creator.Name)
-	fmt.Println("Email: ", creator.Email)
+	fmt.Println(task)	
 }
