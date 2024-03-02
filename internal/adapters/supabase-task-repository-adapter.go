@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -45,6 +46,29 @@ func serializeSupabaseData(data map[string]interface{}) (*entities.Task, error) 
 	return entities.NewTask(temp.Id, temp.Title, temp.Description, temp.Date, temp.Finished, temp.Creators), nil
 }
 
+func serializeSupabaseDataArray(data interface{}) ([]*entities.Task, error) {
+	jsonData, err := json.Marshal(data)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var temp []supabaseSelectAllTaskResponse
+	json.Unmarshal(jsonData, &temp)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var tasks []*entities.Task
+	for _, task := range temp {
+		tasks = append(tasks, entities.NewTask(task.Id, task.Title, task.Description, task.Date, task.Finished, task.Creators))
+	}
+	fmt.Println(tasks)
+
+	return tasks, nil
+}
+
 func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, error) {
 	var supabaseData map[string]interface{}
 
@@ -64,8 +88,18 @@ func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, erro
 	return response, nil
 }
 
-// func (a *SupabaseTaskRepositoryAdapter) FindByTitle(title string, creatorId int32) ([]entities.Task, error)
+func (a *SupabaseTaskRepositoryAdapter) FindByTitle(title string, creatorId string) ([]*entities.Task, error) {
+	var supabaseData []map[string]interface{}
 
-// func (a *SupabaseTaskRepositoryAdapter) FindAll(creatorId int32) ([]entities.Task, error)
+	err := a.client.DB.From("tasks").Select("*", "creators (*)").Like("title", "%" + title + "%").Eq("creator_id", creatorId).Execute(&supabaseData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return serializeSupabaseDataArray(supabaseData)
+}
+
+// func (a *SupabaseTaskRepositoryAdapter) FindAll(creatorId string) ([]*entities.Task, error)
 
 // func (a *SupabaseTaskRepositoryAdapter) Create(input *entities.Task) error
