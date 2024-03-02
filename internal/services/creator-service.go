@@ -6,6 +6,7 @@ import (
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
 	"github.com/afmireski/golang-supabase-tasklist/internal/ports"
+	"github.com/google/uuid"
 )
 
 type CreatorService struct {
@@ -21,8 +22,14 @@ func isValidEmail(email string) bool {
 }
 
 func isValidName(name string) bool {
-	length := len(name);
+	length := len(name)
 	return 3 <= length && length <= 200
+}
+
+func isValidUuid(id string) bool {
+	_, err := uuid.Parse(id)
+
+	return err == nil
 }
 
 func (s *CreatorService) Create(name string, email string) error {
@@ -36,4 +43,13 @@ func (s *CreatorService) Create(name string, email string) error {
 
 	creator := entities.NewCreator("", name, email)
 	return s.repository.Create(creator)
+}
+
+func (s *CreatorService) FindById(id string) (*entities.Creator, error) {
+
+	if !isValidUuid(id) {
+		return nil, errors.New("invalid id")
+	}
+
+	return s.repository.FindById(id)
 }
