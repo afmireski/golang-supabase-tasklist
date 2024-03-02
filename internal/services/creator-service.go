@@ -18,6 +18,10 @@ func NewCreatorService(repository ports.CreatorRepository) *CreatorService {
 }
 
 func isValidEmail(email string) bool {
+	if email == "" {
+		return false
+	}
+	
 	return regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(email)
 }
 
@@ -52,4 +56,12 @@ func (s *CreatorService) FindById(id string) (*entities.Creator, error) {
 	}
 
 	return s.repository.FindById(id)
+}
+
+func (s *CreatorService) FindByEmail(email string) (*entities.Creator, error) {
+	if !isValidEmail(email) {
+		return nil, errors.New("invalid email")
+	}
+
+	return s.repository.FindByEmail(email)
 }
