@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
+	"github.com/afmireski/golang-supabase-tasklist/internal/types"
 	supabase "github.com/nedpals/supabase-go"
 )
 
@@ -14,7 +15,7 @@ type SupabaseTaskRepositoryAdapter struct {
 	client *supabase.Client
 }
 
-type supabaseSelectAllTaskResponse struct {
+type supabaseTaskResponse struct {
 	Id          int32             `json:"id"`
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
@@ -36,7 +37,7 @@ func serializeSupabaseData(data map[string]interface{}) (*entities.Task, error) 
 		return nil, err
 	}
 
-	var temp supabaseSelectAllTaskResponse
+	var temp supabaseTaskResponse
 	json.Unmarshal(jsonData, &temp)
 
 	if err != nil {
@@ -53,7 +54,7 @@ func serializeSupabaseDataArray(data interface{}) ([]*entities.Task, error) {
 		return nil, err
 	}
 
-	var temp []supabaseSelectAllTaskResponse
+	var temp []supabaseTaskResponse
 	json.Unmarshal(jsonData, &temp)
 
 	if err != nil {
@@ -112,4 +113,10 @@ func (a *SupabaseTaskRepositoryAdapter) FindAll(creatorId string) ([]*entities.T
 	return serializeSupabaseDataArray(supabaseData)
 }
 
-// func (a *SupabaseTaskRepositoryAdapter) Create(input *entities.Task) error
+func (a *SupabaseTaskRepositoryAdapter) Create(input types.CreateTaskInput) error {
+	var supabaseData []supabaseTaskResponse;
+
+	err := a.client.DB.From("tasks").Insert(input).Execute(&supabaseData);
+
+	return err
+}
