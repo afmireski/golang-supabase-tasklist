@@ -1,12 +1,12 @@
 package services
 
 import (
-	"errors"
 	"regexp"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
 	"github.com/afmireski/golang-supabase-tasklist/internal/ports"
 	"github.com/google/uuid"
+	myErrors "github.com/afmireski/golang-supabase-tasklist/internal/errors"
 )
 
 type CreatorService struct {
@@ -21,7 +21,7 @@ func isValidEmail(email string) bool {
 	if email == "" {
 		return false
 	}
-	
+
 	return regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(email)
 }
 
@@ -36,32 +36,53 @@ func isValidUuid(id string) bool {
 	return err == nil
 }
 
-func (s *CreatorService) Create(name string, email string) error {
+func (s *CreatorService) Create(name string, email string) *myErrors.InternalError {
 	if name == "" || email == "" {
-		return errors.New("name and email are required")
+		return myErrors.NewInternalError("missing name or email", 400)
 	} else if !isValidEmail(email) {
-		return errors.New("invalid email")
+		return myErrors.NewInternalError("invalid email", 400)
 	} else if !isValidName(name) {
-		return errors.New("the name should be between 3 and 200 characters")
+		return myErrors.NewInternalError("invalid name", 400)
 	}
 
 	creator := entities.NewCreator("", name, email)
-	return s.repository.Create(creator)
+
+	err := s.repository.Create(creator)
+
+	if err != nil {
+		return myErrors.NewInternalError(err.Error(), 500)
+	}
+
+	return nil
 }
 
-func (s *CreatorService) FindById(id string) (*entities.Creator, error) {
+func (s *CreatorService) FindById(id string) (*entities.Creator, *myErrors.InternalError) {
 
 	if !isValidUuid(id) {
-		return nil, errors.New("invalid id")
+		return nil, myErrors.NewInternalError("invalid id", 400)
 	}
 
-	return s.repository.FindById(id)
+	response, err := s.repository.FindById(id)
+
+	if err != nil {
+		return nil, myErrors.NewInternalError(err.Error(), 500)
+	} else if response == nil {
+		return nil, myErrors.NewInternalError("Creator not found", 404)		
+	}
+	return response, nil
 }
 
-func (s *CreatorService) FindByEmail(email string) (*entities.Creator, error) {
+func (s *CreatorService) FindByEmail(email string) (*entities.Creator, *myErrors.InternalError) {
 	if !isValidEmail(email) {
-		return nil, errors.New("invalid email")
+		return nil, myErrors.NewInternalError("invalid email", 400)
 	}
 
-	return s.repository.FindByEmail(email)
+	response, err := s.repository.FindByEmail(email)
+
+	if err != nil {
+		return nil, myErrors.NewInternalError(err.Error(), 500)
+	} else if response == nil {
+		return nil, myErrors.NewInternalError("Creator not found", 404)		
+	}
+	return response, nil
 }
