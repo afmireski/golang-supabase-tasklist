@@ -2,6 +2,8 @@ package adapters
 
 import (
 	"encoding/json"
+	"strconv"
+	"time"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
 	supabase "github.com/nedpals/supabase-go"
@@ -11,6 +13,15 @@ type SupabaseTaskRepositoryAdapter struct {
 	client *supabase.Client
 }
 
+type supabaseSelectAllTaskResponse struct {
+	Id          int32             `json:"id"`
+	Title       string            `json:"title"`
+	Description string            `json:"description"`
+	Date        time.Time         `json:"date"`
+	Finished    bool              `json:"completed"`
+	Creators    *entities.Creator `json:"creators"`
+}
+
 func NewSupabaseTasksRepositoryAdapter(client *supabase.Client) *SupabaseTaskRepositoryAdapter {
 	return &SupabaseTaskRepositoryAdapter{
 		client: client,
@@ -18,48 +29,35 @@ func NewSupabaseTasksRepositoryAdapter(client *supabase.Client) *SupabaseTaskRep
 }
 
 func serializeSupabaseData(data map[string]interface{}) (*entities.Task, error) {
-	var task entities.Task
-	taskData, err := json.Marshal(data)
+	jsonData, err := json.Marshal(data)
 
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
-	var creator entities.Creator
-	creatorData, err := json.Marshal(data["creators"])
+	var temp supabaseSelectAllTaskResponse
+	json.Unmarshal(jsonData, &temp)
 
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(creatorData, &creator)
-
-	if (err != nil) {
-		return nil, err
-	}
-
-	err = json.Unmarshal(taskData, &task)
-
-	if (err != nil) {
-		return nil, err
-	}
-
-	task.Creator = &creator;
-
-	return &task, nil
+	return entities.NewTask(temp.Id, temp.Title, temp.Description, temp.Date, temp.Finished, temp.Creators), nil
 }
 
 func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, error) {
 	var supabaseData map[string]interface{}
-	err := a.client.DB.From("tasks").Select("*", "creators (*)").Single().Eq("id", iId).Execute(&supabaseData)
 
-	if (err != nil) {
+	parsedId := strconv.Itoa(int(id))
+	err := a.client.DB.From("tasks").Select("*", "creators (*)").Single().Eq("id", parsedId).Execute(&supabaseData)
+
+	if err != nil {
 		return nil, err
 	}
 
 	response, err := serializeSupabaseData(supabaseData)
 
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
