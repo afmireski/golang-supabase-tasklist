@@ -100,6 +100,16 @@ func (a *SupabaseTaskRepositoryAdapter) FindByTitle(title string, creatorId stri
 	return serializeSupabaseDataArray(supabaseData)
 }
 
-// func (a *SupabaseTaskRepositoryAdapter) FindAll(creatorId string) ([]*entities.Task, error)
+func (a *SupabaseTaskRepositoryAdapter) FindAll(creatorId string) ([]*entities.Task, error) {
+	var supabaseData []map[string]interface{}
+
+	err := a.client.DB.From("tasks").Select("*", "creators (*)").Eq("creator_id", creatorId).Execute(&supabaseData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return serializeSupabaseDataArray(supabaseData)
+}
 
 // func (a *SupabaseTaskRepositoryAdapter) Create(input *entities.Task) error
