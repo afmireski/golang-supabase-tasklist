@@ -33,3 +33,20 @@ func (c *CreatorsController) GetById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(output)
 }
 
+func (c *CreatorsController) GetByEmail(w http.ResponseWriter, r *http.Request) {
+
+	emailParam := chi.URLParam(r, "email")
+
+	output, err := c.service.FindByEmail(emailParam)
+
+	if err != nil {
+		w.WriteHeader(err.HttpCode())
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(output)
+}
+
