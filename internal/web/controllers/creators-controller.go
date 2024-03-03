@@ -50,3 +50,29 @@ func (c *CreatorsController) GetByEmail(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(output)
 }
 
+func (c *CreatorsController) NewCreator(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Email string `json:"email"`
+		Name string `json:"name"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&input)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Fail on try read the request body"))
+		return
+	}
+
+	serviceErr := c.service.Create(input.Name, input.Email)
+
+	if serviceErr != nil {
+		w.WriteHeader(serviceErr.HttpCode())
+		w.Write([]byte(serviceErr.Error()))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+}
+
