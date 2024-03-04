@@ -1,8 +1,10 @@
 package services
 
 import (
+	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
+	myErrors "github.com/afmireski/golang-supabase-tasklist/internal/errors"
 	"github.com/afmireski/golang-supabase-tasklist/internal/ports"
-	"github.com/google/uuid"
+	"github.com/afmireski/golang-supabase-tasklist/internal/validators"
 )
 
 type TasksService struct {
@@ -13,11 +15,17 @@ func NewTasksService(repository ports.TaskRepository) *TasksService {
 	return &TasksService{repository}
 }
 
-func isValidUuid(id string) bool {
-	_, err := uuid.Parse(id)
+func (s *TasksService) FindById(id int32) (*entities.Task, *myErrors.InternalError) {
+	if !validators.IsValidNumericId(id) {
+		return nil, myErrors.NewInternalError("invalid id", 400)
+	}
 
-	return err == nil
+	repositoryResponse, err := s.repository.FindById(id)
+
+	if err != nil {
+		return nil, myErrors.NewInternalError(err.Error(), 500)
+	} else if repositoryResponse == nil {
+		return nil, myErrors.NewInternalError("Task not found", 404)
+	}
+	return repositoryResponse, nil
 }
-
-
-

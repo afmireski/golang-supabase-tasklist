@@ -82,6 +82,8 @@ func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, erro
 
 	if err != nil {
 		return nil, err
+	} else if response == nil {
+		return nil, nil
 	}
 
 	return response, nil
