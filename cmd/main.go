@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	// "log"
 	"net/http"
 	"os"
 
@@ -11,16 +11,10 @@ import (
 	"github.com/afmireski/golang-supabase-tasklist/internal/web/controllers"
 	"github.com/afmireski/golang-supabase-tasklist/internal/web/routers"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 	supabase "github.com/nedpals/supabase-go"
 )
 
 func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
 	supabaseUrl := os.Getenv("SUPABASE_URL")
 	supabaseKey := os.Getenv("SUPABASE_API_KEY")
