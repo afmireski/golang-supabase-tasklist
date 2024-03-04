@@ -8,7 +8,7 @@ import (
 func SetupCreatorsRouter(router *chi.Mux, controller *controllers.CreatorsController) {
 	router.Get("/creators/{id}", controller.GetById)
 
-	router.Get("/creators/{email}/email", controller.GetByEmail)
+	// router.Get("/creators/{email}/email", controller.GetByEmail)
 
 	router.Post("/creators/new", controller.NewCreator)
 }
