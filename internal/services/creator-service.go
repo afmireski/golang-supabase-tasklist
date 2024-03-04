@@ -36,7 +36,7 @@ func (s *CreatorService) Create(name string, email string) *myErrors.InternalErr
 
 func (s *CreatorService) FindById(id string) (*entities.Creator, *myErrors.InternalError) {
 
-	if !isValidUuid(id) {
+	if !validators.IsValidUuid(id) {
 		return nil, myErrors.NewInternalError("invalid id", 400)
 	}
 
