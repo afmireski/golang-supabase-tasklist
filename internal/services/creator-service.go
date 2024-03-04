@@ -4,9 +4,10 @@ import (
 	"regexp"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
-	"github.com/afmireski/golang-supabase-tasklist/internal/ports"
-	"github.com/google/uuid"
 	myErrors "github.com/afmireski/golang-supabase-tasklist/internal/errors"
+	"github.com/afmireski/golang-supabase-tasklist/internal/ports"
+	"github.com/afmireski/golang-supabase-tasklist/internal/types"
+	"github.com/google/uuid"
 )
 
 type CreatorService struct {
@@ -21,7 +22,6 @@ func isValidEmail(email string) bool {
 	if email == "" {
 		return false
 	}
-
 	return regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).MatchString(email)
 }
 
@@ -45,9 +45,7 @@ func (s *CreatorService) Create(name string, email string) *myErrors.InternalErr
 		return myErrors.NewInternalError("invalid name", 400)
 	}
 
-	creator := entities.NewCreator("", name, email)
-
-	err := s.repository.Create(creator)
+	err := s.repository.Create(types.NewCreatorInput{name, email})
 
 	if err != nil {
 		return myErrors.NewInternalError(err.Error(), 500)
@@ -67,7 +65,7 @@ func (s *CreatorService) FindById(id string) (*entities.Creator, *myErrors.Inter
 	if err != nil {
 		return nil, myErrors.NewInternalError(err.Error(), 500)
 	} else if response == nil {
-		return nil, myErrors.NewInternalError("Creator not found", 404)		
+		return nil, myErrors.NewInternalError("Creator not found", 404)
 	}
 	return response, nil
 }
@@ -82,7 +80,7 @@ func (s *CreatorService) FindByEmail(email string) (*entities.Creator, *myErrors
 	if err != nil {
 		return nil, myErrors.NewInternalError(err.Error(), 500)
 	} else if response == nil {
-		return nil, myErrors.NewInternalError("Creator not found", 404)		
+		return nil, myErrors.NewInternalError("Creator not found", 404)
 	}
 	return response, nil
 }

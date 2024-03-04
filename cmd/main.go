@@ -3,9 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/adapters"
+	"github.com/afmireski/golang-supabase-tasklist/internal/services"
+	"github.com/afmireski/golang-supabase-tasklist/internal/web/controllers"
+	"github.com/afmireski/golang-supabase-tasklist/internal/web/routers"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	supabase "github.com/nedpals/supabase-go"
 )
@@ -22,14 +27,13 @@ func main() {
 
 	supabaseClient := supabase.CreateClient(supabaseUrl, supabaseKey)
 
-	// creatorRepository := adapters.NewSupabaseCreatorRepositoryAdapter(supabaseClient)
-	tasksRepository := adapters.NewSupabaseTasksRepositoryAdapter(supabaseClient)
+	creatorsRepository := adapters.NewSupabaseCreatorRepositoryAdapter(supabaseClient)
+	creatorsService := services.NewCreatorService(creatorsRepository)
+	creatorsController := controllers.NewCreatorsController(creatorsService)
 
-	task, err := tasksRepository.FindById(1)
-	if err != nil {
-		log.Fatal(err)
-	}
+	r := chi.NewRouter()
+	routers.SetupCreatorsRouter(r, creatorsController)
 
-	fmt.Println(task)
-	fmt.Println(task.Creator)
+	fmt.Println("Running server...")
+	http.ListenAndServe(":3000", r)
 }

@@ -2,7 +2,6 @@ package adapters
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -65,7 +64,6 @@ func serializeSupabaseDataArray(data interface{}) ([]*entities.Task, error) {
 	for _, task := range temp {
 		tasks = append(tasks, entities.NewTask(task.Id, task.Title, task.Description, task.Date, task.Finished, task.Creators))
 	}
-	fmt.Println(tasks)
 
 	return tasks, nil
 }

@@ -22,13 +22,13 @@ func (c *CreatorsController) GetById(w http.ResponseWriter, r *http.Request) {
 
 	output, err := c.service.FindById(idParam)
 
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
-		w.WriteHeader(err.HttpCode())
-		w.Write([]byte(err.Error()))
+		w.WriteHeader(err.HttpCode)
+		json.NewEncoder(w).Encode(err)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
+	
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(output)
 }
@@ -39,13 +39,13 @@ func (c *CreatorsController) GetByEmail(w http.ResponseWriter, r *http.Request) 
 
 	output, err := c.service.FindByEmail(emailParam)
 
+	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
-		w.WriteHeader(err.HttpCode())
-		w.Write([]byte(err.Error()))
+		w.WriteHeader(err.HttpCode)
+		json.NewEncoder(w).Encode(err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(output)
 }
@@ -66,9 +66,10 @@ func (c *CreatorsController) NewCreator(w http.ResponseWriter, r *http.Request) 
 
 	serviceErr := c.service.Create(input.Name, input.Email)
 
+	w.Header().Set("Content-Type", "application/json")
 	if serviceErr != nil {
-		w.WriteHeader(serviceErr.HttpCode())
-		w.Write([]byte(serviceErr.Error()))
+		w.WriteHeader(serviceErr.HttpCode)
+		json.NewEncoder(w).Encode(serviceErr)
 		return
 	}
 
