@@ -25,8 +25,13 @@ func main() {
 	creatorsService := services.NewCreatorService(creatorsRepository)
 	creatorsController := controllers.NewCreatorsController(creatorsService)
 
+	taskRepository := adapters.NewSupabaseTasksRepositoryAdapter(supabaseClient)
+	taskService := services.NewTasksService(taskRepository)
+	taskController := controllers.NewTaskController(taskService)
+
 	r := chi.NewRouter()
 	routers.SetupCreatorsRouter(r, creatorsController)
+	routers.SetupTasksRouter(r, taskController)
 
 	fmt.Println("Running server...")
 	http.ListenAndServe(":3000", r)

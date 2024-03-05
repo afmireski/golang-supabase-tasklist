@@ -24,7 +24,7 @@ func (c *TaskController) GetById(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		err := myErrors.NewInternalError(err.Error(), http.StatusBadRequest)
+		err := myErrors.NewInternalError("fail on read parameters", http.StatusBadRequest)
 		w.WriteHeader(err.HttpCode)
 		json.NewEncoder(w).Encode(err)
 		return

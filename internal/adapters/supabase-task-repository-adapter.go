@@ -3,6 +3,7 @@ package adapters
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/afmireski/golang-supabase-tasklist/internal/entities"
@@ -75,6 +76,11 @@ func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, erro
 	err := a.client.DB.From("tasks").Select("*", "creators (*)").Single().Eq("id", parsedId).Execute(&supabaseData)
 
 	if err != nil {
+
+		if strings.Contains(err.Error(), "PGRST116") {
+			return nil, nil
+		}
+
 		return nil, err
 	}
 
@@ -82,9 +88,7 @@ func (a *SupabaseTaskRepositoryAdapter) FindById(id int32) (*entities.Task, erro
 
 	if err != nil {
 		return nil, err
-	} else if response == nil {
-		return nil, nil
-	}
+	} 
 
 	return response, nil
 }
